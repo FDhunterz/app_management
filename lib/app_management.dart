@@ -31,6 +31,15 @@ class AppManagement {
     return await _channel.invokeMethod('runAppInPhone', [packageName]);
   }
 
+  static Future<Speed> getNetworkBandwith() async {
+    final mem = await _channel.invokeMethod('getNetworkBandwith');
+    final parse = json.decode(mem!);
+    return Speed(
+      upload: double.parse(parse['up']),
+      download: double.parse(parse['down']),
+    );
+  }
+
   static Future<List<App>> getInstalledApps() async {
     final String getApp = await _channel.invokeMethod('getInstalledApp');
     final parseApp = json.decode(getApp);
@@ -39,5 +48,9 @@ class AppManagement {
       app.add(App(name: i['name'], packageName: i['package']));
     }
     return app;
+  }
+
+  static Future<void> startWhatsappService() async {
+    await _channel.invokeMethod('start_whatsapp_service');
   }
 }

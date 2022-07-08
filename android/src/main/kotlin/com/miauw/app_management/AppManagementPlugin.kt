@@ -3,6 +3,11 @@ package com.miauw.app_management
 import androidx.annotation.NonNull
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.startActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -21,6 +26,8 @@ class AppManagementPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
   private lateinit var context: Context
   private lateinit var activity: Activity
+
+
 
   override fun onDetachedFromActivity() {
     // TODO("Not yet implemented")
@@ -44,11 +51,14 @@ override fun onDetachedFromActivityForConfigChanges() {
     channel.setMethodCallHandler(this)
   }
 
+  @RequiresApi(Build.VERSION_CODES.KITKAT)
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
+      result.success("Android ${Build.VERSION.RELEASE}")
     } else if(call.method == "getMemoryInfo") {
       result.success(jsonEncode(ManageApp().getMemory(context)))
+    } else if(call.method == "getNetworkSpeed") {
+      result.success(jsonEncode(ManageApp().getNetworkSpeed(context)))
     }else if(call.method == "getInstalledApp") {
       result.success(jsonEncode(ManageApp().getApp(context)))
     }else if(call.method == "killAll") {
@@ -59,6 +69,9 @@ override fun onDetachedFromActivityForConfigChanges() {
       }catch(e : Exception){
         result.error("0x0001","fatal",e.toString())
       }
+    }else if(call.method == "start_whatsapp_service"){
+      println("run service")
+      ListenService()
     }else {
       result.notImplemented()
     }

@@ -10,3 +10,9 @@ class App {
 
   App({this.name, this.packageName});
 }
+
+class Speed {
+  double upload, download;
+
+  Speed({this.upload = 0, this.download = 0});
+}

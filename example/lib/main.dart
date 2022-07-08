@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:app_management/app_management.dart';
+import 'package:flutter/services.dart';
+
+import 'memory.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +24,12 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initPlatformState();
     Future.delayed(Duration.zero, () {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      );
       // Clipboard.setData(ClipboardData(text: json.encode({"testing": "test"})));
     });
   }
@@ -51,20 +60,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('click to Run Apps'),
-        ),
-        body: InkWell(
-          onTap: () async {
-            final app = await AppManagement.getInstalledApps();
-            AppManagement.runInstalledApp(app.first.packageName ?? '');
-          },
-          child: Center(
-            child: Text('Running on: $_platformVersion\n'),
-          ),
-        ),
-      ),
+      home: MemmoryUI(),
     );
   }
 }

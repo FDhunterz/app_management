@@ -6,9 +6,38 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 
 import android.content.Intent
+import android.net.NetworkCapabilities
+
+import android.net.NetworkInfo
+
+import android.net.ConnectivityManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 
 class ManageApp {
+
+    fun getNetworkSpeed(context: Context) : Map<String,String> {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val netInfo = cm.activeNetworkInfo
+        val nc = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                cm.getNetworkCapabilities(cm.activeNetwork)
+            } else {
+                TODO("VERSION.SDK_INT < M")
+            }
+        } else {
+            TODO("VERSION.SDK_INT < LOLLIPOP")
+        }
+        val downSpeed = nc!!.linkDownstreamBandwidthKbps
+        val upSpeed = nc!!.linkUpstreamBandwidthKbps
+
+        return mapOf(
+            "down" to downSpeed.toString(),
+            "up" to upSpeed.toString(),
+        )
+    }
+
      fun killAll(context : Context) : String{
 
         val pack : PackageManager =  context.getPackageManager()
@@ -16,7 +45,7 @@ class ManageApp {
         val lis : List<ApplicationInfo> = pack.getInstalledApplications(PackageManager.GET_META_DATA)
         val mActivityManager : ActivityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for( i in lis){
-            if(i.sourceDir.contains("/data/app") && i.packageName != "com.miauw.booster"){
+            if(i.packageName != "com.miauw.booster"){
                 ++count
                 // work
                 mActivityManager.killBackgroundProcesses(i.packageName)
