@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -9,11 +10,19 @@ class AppManagement {
   static const MethodChannel _channel = MethodChannel('app_management');
 
   static Future<String?> get platformVersion async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
-  static Future<Memory> get memoryInfo async {
+  static Future<Memory?> get memoryInfo async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     final String? mem = await _channel.invokeMethod('getMemoryInfo');
     final parse = json.decode(mem!);
     return Memory(
@@ -23,15 +32,27 @@ class AppManagement {
     );
   }
 
-  static Future<String> get killAllApp async {
+  static Future<String?> get killAllApp async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     return await _channel.invokeMethod('killAll');
   }
 
-  static Future<String> runInstalledApp(String packageName) async {
+  static Future<String?> runInstalledApp(String packageName) async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     return await _channel.invokeMethod('runAppInPhone', [packageName]);
   }
 
-  static Future<Speed> getNetworkBandwith() async {
+  static Future<Speed?> getNetworkBandwith() async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     final mem = await _channel.invokeMethod('getNetworkBandwith');
     final parse = json.decode(mem!);
     return Speed(
@@ -40,7 +61,11 @@ class AppManagement {
     );
   }
 
-  static Future<List<App>> getInstalledApps() async {
+  static Future<List<App>?> getInstalledApps() async {
+    if (!Platform.isAndroid) {
+      print('not Supported');
+      return null;
+    }
     final String getApp = await _channel.invokeMethod('getInstalledApp');
     final parseApp = json.decode(getApp);
     List<App> app = [];
@@ -50,7 +75,15 @@ class AppManagement {
     return app;
   }
 
-  static Future<void> startWhatsappService() async {
-    await _channel.invokeMethod('start_whatsapp_service');
+  StreamController stream = StreamController();
+
+  Stream startWhatsappService() {
+    _channel.invokeMethod('start_whatsapp_service');
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'whatsapp_message') {
+        stream.add(call.arguments);
+      } else {}
+    });
+    return stream.stream;
   }
 }

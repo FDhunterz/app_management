@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.provider.Settings
 import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.startActivity
@@ -26,6 +28,7 @@ class AppManagementPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
   private lateinit var context: Context
   private lateinit var activity: Activity
+  private var listener:ListenService = ListenService()
 
 
 
@@ -51,7 +54,6 @@ override fun onDetachedFromActivityForConfigChanges() {
     channel.setMethodCallHandler(this)
   }
 
-  @RequiresApi(Build.VERSION_CODES.KITKAT)
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${Build.VERSION.RELEASE}")
@@ -70,8 +72,9 @@ override fun onDetachedFromActivityForConfigChanges() {
         result.error("0x0001","fatal",e.toString())
       }
     }else if(call.method == "start_whatsapp_service"){
-      println("run service")
-      ListenService()
+      listener.start(context,channel)
+    }else if(call.method == "whatsapp_message") {
+      result.success(call.arguments)
     }else {
       result.notImplemented()
     }

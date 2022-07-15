@@ -39,10 +39,7 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
-    try {
-      final app = await AppManagement.getInstalledApps();
-      platformVersion = app.first.name ?? ''; //(await AppManagement.runInstalledApp(app[1].packageName!)).toString();
-    } catch (_) {
+    try {} catch (_) {
       print(_);
       platformVersion = 'Failed to get Memory Info.';
     }
@@ -52,9 +49,7 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    setState(() {});
   }
 
   @override

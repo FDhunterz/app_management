@@ -1,6 +1,6 @@
 name: app_management
 description: Close Other App, Run Other App And Much more for android
-version: 0.0.1-dev.1
+version: 0.0.1-dev.6
 homepage:
 
 environment:
@@ -30,6 +30,10 @@ flutter:
       android:
         package: com.miauw.app_management
         pluginClass: AppManagementPlugin
+      ios:
+        package: com.miauw.app_management
+        pluginClass: AppManagementPlugin
+        
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

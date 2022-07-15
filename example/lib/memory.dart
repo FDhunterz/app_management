@@ -16,15 +16,18 @@ class MemmoryUI extends StatefulWidget {
 }
 
 class _MemmoryUIState extends State<MemmoryUI> {
-  Memory? memory;
+  AppManagement catc = AppManagement();
+  Memory? memory = Memory(available: 1, percentage: 1, total: 1);
   @override
   void initState() {
     super.initState();
-    AppManagement.startWhatsappService();
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      memory = await AppManagement.memoryInfo;
-      setState(() {});
+    catc.startWhatsappService().listen((event) {
+      print(event);
     });
+    // Timer.periodic(const Duration(seconds: 1), (timer) async {
+    //   memory = await AppManagement.memoryInfo;
+    //   setState(() {});
+    // });
   }
 
   @override
@@ -295,8 +298,6 @@ class _MemmoryUIState extends State<MemmoryUI> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.memory),
         onPressed: () async {
-          final kill = await AppManagement.killAllApp;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(kill)));
           setState(() {});
         },
       ),
