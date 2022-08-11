@@ -1,8 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:app_management/app_management.dart';
 import 'package:flutter/services.dart';
-
 import 'memory.dart';
 
 void main() {
@@ -16,11 +16,26 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   String _platformVersion = 'Unknown';
-
+  AnimationController? a;
+  Animation? aa;
   @override
   void initState() {
+    a = AnimationController(vsync: this, duration: Duration(seconds: 5));
+    aa = Tween(begin: 0.0, end: 2.0).animate(a!
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          a!.reverse();
+        } else if (status == AnimationStatus.dismissed) {
+          a!.forward();
+        }
+      }));
+    a!.forward();
+
     super.initState();
     initPlatformState();
     Future.delayed(Duration.zero, () {
@@ -51,6 +66,8 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {});
   }
+
+  Offset pointer = Offset(0, 0);
 
   @override
   Widget build(BuildContext context) {

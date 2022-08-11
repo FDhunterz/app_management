@@ -32,20 +32,19 @@ class ListenService : NotificationListenerService(){
         private const val DISCORD_PACKAGE = "com.discord"
         private const val TELEGRAM_PACKAGE = "com.telegram"
         private lateinit var mContext: Context
-        lateinit var  result: MethodChannel;
+        lateinit var  result: MethodChannel
         var VALUES = ""
     }
 
      fun isNotificationServiceEnabled(context : Context) : Boolean {
-         val cn = ComponentName(context, ListenService::class.java)
-         val flat =
-             Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-         val enabled = flat != null && flat.contains(cn.flattenToString())
-            return enabled
+            val cn = ComponentName(context, ListenService::class.java)
+            val flat =
+                Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+            val enabled = flat != null && flat.contains(cn.flattenToString())
+               return enabled
      }
 
     fun start(context: Context,results: MethodChannel){
-
         try{
             if(!isNotificationServiceEnabled(context)){
                 context.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -58,30 +57,29 @@ class ListenService : NotificationListenerService(){
         }
     }
 
-        fun getLastMessage() : String{
-            return VALUES
-        }
+    fun getLastMessage() : String{
+        return VALUES
+    }
 
 
     override fun onListenerConnected() {
-        }
-        override fun onNotificationPosted(sbn: StatusBarNotification) {
-            if (sbn.packageName == WA_PACKAGE || sbn.packageName == DISCORD_PACKAGE || sbn.packageName == TELEGRAM_PACKAGE) {
-                var notification = sbn.getNotification();
-                var bundle : Bundle = notification.extras;
-
-            var from : String?  = bundle.getString(NotificationCompat.EXTRA_TITLE);
+    }
+    override fun onNotificationPosted(sbn: StatusBarNotification) {
             try{
-
-                var message : String?  = bundle.getString(NotificationCompat.EXTRA_TEXT).toString();
-                result.invokeMethod("whatsapp_message", message.toString());
-            }catch(e : Exception){
-                var i = bundle.getCharSequenceArrayList(NotificationCompat.EXTRA_TEXT);
-                for( j in i!!){
-                    result.invokeMethod("whatsapp_message", j.toString());
+                if (sbn.packageName == WA_PACKAGE || sbn.packageName == DISCORD_PACKAGE || sbn.packageName == TELEGRAM_PACKAGE) {
+                    var notification = sbn.getNotification()
+                    var bundle : Bundle = notification.extras
+    
+                    val evt = Listen(mContext, sbn)
+                    try{
+                        result.invokeMethod("whatsapp_message", evt.data)
+                    }catch(e : Exception){
+                    }
+    
                 }
+            }catch(j:Exception){
+    
             }
 
-            }
-        }
+    }
 }

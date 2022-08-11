@@ -22,7 +22,7 @@ class _MemmoryUIState extends State<MemmoryUI> {
   void initState() {
     super.initState();
     catc.startWhatsappService().listen((event) {
-      print(event);
+      print(event['text']);
     });
     // Timer.periodic(const Duration(seconds: 1), (timer) async {
     //   memory = await AppManagement.memoryInfo;
